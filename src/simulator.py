@@ -5,8 +5,8 @@ import collections
 import logging
 
 
-SendAction = collections.namedtuple('SendAction', 'destination message')
-ReceiveAction = collections.namedtuple('ReceiveAction', 'sender message')
+SendAction = collections.namedtuple('SendAction', 'destination packet_id')
+ReceiveAction = collections.namedtuple('ReceiveAction', 'sender packet_id')
 PrintAction = collections.namedtuple('PrintAction', 'payload')
 MutexStartAction = collections.namedtuple('MutexStartAction', '')
 MutexEndAction = collections.namedtuple('MutexEndAction', '')
