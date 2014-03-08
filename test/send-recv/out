@@ -4,5 +4,5 @@ printed p1 wait-m2 3
 printed p2 recv-m1 3
 printed p2 send-m2 4
 printed p2 done-p2 6
-printed p1 recv-m2 5
-printed p1 done-p1 6
+printed p1 recv-m2 6
+printed p1 done-p1 7
