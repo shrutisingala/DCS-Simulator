@@ -15,10 +15,10 @@ Packet = collections.namedtuple('Packet', 'sender destination packet_id')
 
 
 class Process(object):
-    def __init__(self, name, actions, event_queue):
+    def __init__(self, name, actions, packet_pool):
         self.name = name
         self.actions = actions
-        self.event_queue = event_queue
+        self.packet_pool = packet_pool
         self.clock = 1
 
     @property
@@ -48,13 +48,13 @@ class Process(object):
     def handle_action(self, action):
         if isinstance(action, SendAction):
             packet = Packet(self.name, action.destination, action.packet_id)
-            self.event_queue.append(packet)
+            self.packet_pool.append(packet)
             return True
         elif isinstance(action, ReceiveAction):
-            for i in reversed(xrange(len(self.event_queue))):
-                packet = self.event_queue[i]
+            for i in reversed(xrange(len(self.packet_pool))):
+                packet = self.packet_pool[i]
                 if self.accepts_packet(packet, action):
-                    del self.event_queue[i]
+                    del self.packet_pool[i]
                     return True
             return False
         elif isinstance(action, PrintAction):
@@ -67,17 +67,17 @@ class Process(object):
             raise NotImplementedError
 
 
-def parse_input(infile, event_queue=None):
+def parse_input(infile, packet_pool=None):
     process_name = None
     process_actions = collections.deque()
-    event_queue = collections.deque() if event_queue is None else event_queue
+    packet_pool = collections.deque() if packet_pool is None else packet_pool
     lines = (line.lower().strip() for line in infile if line.strip())
     for lineno, line in enumerate(lines, start=1):
         tokens = line.split()
         if line.startswith('begin process'):
             process_name = tokens[2]
         elif line.startswith('end process'):
-            yield Process(process_name, process_actions, event_queue)
+            yield Process(process_name, process_actions, packet_pool)
             process_name = None
             process_actions = collections.deque()
         elif line.startswith('begin mutex'):
@@ -105,8 +105,8 @@ if __name__ == '__main__':
     infile = args.infile
 
     try:
-        event_queue = collections.deque()
-        processes = list(parse_input(infile, event_queue))
+        packet_pool = collections.deque()
+        processes = list(parse_input(infile, packet_pool))
         while not all(process.is_done for process in processes):
             for process in processes:
                 process.execute_next()
