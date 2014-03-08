@@ -11,13 +11,15 @@ PrintAction = collections.namedtuple('PrintAction', 'payload')
 MutexStartAction = collections.namedtuple('MutexStartAction', '')
 MutexEndAction = collections.namedtuple('MutexEndAction', '')
 
+Packet = collections.namedtuple('Packet', 'sender destination packet_id')
+
 
 class Process(object):
     def __init__(self, name, actions, event_queue):
         self.name = name
         self.actions = actions
         self.event_queue = event_queue
-        self.clock = 0
+        self.clock = 1
 
     @property
     def is_done(self):
@@ -30,18 +32,35 @@ class Process(object):
     def execute_next(self):
         if self.is_done:
             return
-        action = self.actions.popleft()
-        self.handle_action(action)
+        if self.handle_action(self.actions[0]):
+            self.clock += 1
+            self.actions.popleft()
+
+    def accepts_packet(self, packet, recv_action):
+        if recv_action.packet_id != packet.packet_id:
+            return False
+        if self.name != packet.destination:
+            return False
+        if recv_action.sender != packet.sender:
+            return False
+        return True
 
     def handle_action(self, action):
-        self.clock += 1
         if isinstance(action, SendAction):
-            raise NotImplementedError
+            packet = Packet(self.name, action.destination, action.packet_id)
+            self.event_queue.append(packet)
+            return True
         elif isinstance(action, ReceiveAction):
-            raise NotImplementedError
+            for i in reversed(xrange(len(self.event_queue))):
+                packet = self.event_queue[i]
+                if self.accepts_packet(packet, action):
+                    del self.event_queue[i]
+                    return True
+            return False
         elif isinstance(action, PrintAction):
             print 'printed {name} {message} {time}'.format(
                 name=self.name, message=action.payload, time=self.clock)
+            return True
         elif isinstance(action, MutexStartAction):
             raise NotImplementedError
         elif isinstance(action, MutexEndAction):
