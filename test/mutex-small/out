@@ -1,0 +1,9 @@
+sent p1 m1 p2 1
+printed p1 abc 2
+printed p1 def 3
+
+printed p2 x1 1
+received p2 m1 p1 2
+printed p2 x2 3
+sent p2 m2 p1 4
+printed p2 x3 5
