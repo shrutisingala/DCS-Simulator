@@ -10,6 +10,6 @@ tests:
 		diff -q \
 			<($(MAIN) $$test/in | sort -k4) \
 			<(sort -k4 $$test/out) >/dev/null \
-		&& echo "$$test OK" \
-		|| echo "$$test FAILED" \
+		&& echo -e "\033[1;32m[OK]\033[0m $$test" \
+		|| echo -e "\033[1;31m[FAIL]\033[0m $$test" \
 	; done
