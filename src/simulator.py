@@ -52,7 +52,7 @@ def parse_input(infile, event_queue=None):
     process_name = None
     process_actions = collections.deque()
     event_queue = collections.deque() if event_queue is None else event_queue
-    lines = (line.lower().strip() for line in infile)
+    lines = (line.lower().strip() for line in infile if line.strip())
     for lineno, line in enumerate(lines, start=1):
         tokens = line.split()
         if line.startswith('begin process'):
