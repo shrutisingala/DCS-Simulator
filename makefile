@@ -10,6 +10,7 @@ tests:
 	for test in $(TEST)/*; do \
 		$(MAIN) $$test/in > $$output && \
 		(diff --suppress-common-lines --side-by-side \
+			  --ignore-blank-lines --ignore-all-space \
 			<(sort -k4 $$output) \
 			<(sort -k4 $$test/out) \
 		 && echo -e "\033[1;32m[OK]\033[0m $$test" \
