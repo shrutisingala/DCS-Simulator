@@ -38,21 +38,26 @@ class Process(object):
     def handle_action(self, action):
         if isinstance(action, SendAction):
             self.clock += 1
-            packet = Packet(self.name, action.destination, action.packet_id)
-            self.packet_pool.add(packet)
+            self.packet_pool.append(Packet(
+                sender=self.name,
+                destination=action.destination,
+                packet_id=action.packet_id))
             return True
 
         elif isinstance(action, ReceiveAction):
-            try:
-                self.packet_pool.remove(Packet(
-                    sender=action.sender,
-                    destination=self.name,
-                    packet_id=action.packet_id))
-            except KeyError:
-                return False
-            else:
+            for i in reversed(xrange(len(self.packet_pool))):
+                packet = self.packet_pool[i]
+                if packet.sender != action.sender:
+                    continue
+                if packet.destination != self.name:
+                    continue
+                if packet.packet_id != action.packet_id:
+                    continue
+                del self.packet_pool[i]
                 self.clock += 1
                 return True
+            else:
+                return False
 
         elif isinstance(action, PrintAction):
             self.clock += 1
@@ -70,7 +75,7 @@ class Process(object):
 def parse_input(infile, packet_pool=None):
     process_name = None
     process_actions = collections.deque()
-    packet_pool = set() if packet_pool is None else packet_pool
+    packet_pool = collections.deque() if packet_pool is None else packet_pool
     lines = (line.lower().strip() for line in infile if line.strip())
     for lineno, line in enumerate(lines, start=1):
         tokens = line.split()
