@@ -38,11 +38,15 @@ class Process(object):
     def handle_action(self, action):
         if isinstance(action, SendAction):
             self.clock += 1
-            self.message_channel.append(Packet(
+            packet = Packet(
                 sender=self.name,
                 destination=action.destination,
                 packet_id=action.packet_id,
-                timestamp=self.clock))
+                timestamp=self.clock)
+            self.message_channel.append(packet)
+            print 'sent {pid} {message} {destination} {time}'.format(
+                pid=self.name, message=packet.packet_id,
+                destination=packet.destination, time=self.clock)
             return True
 
         elif isinstance(action, ReceiveAction):
@@ -56,6 +60,8 @@ class Process(object):
                     continue
                 self.clock += 1
                 self.clock = max(self.clock, packet.timestamp)
+                print 'received {pid} {message} {time}'.format(
+                    pid=self.name, message=packet.packet_id, time=self.clock)
                 del self.message_channel[i]
                 return True
             else:
