@@ -15,10 +15,10 @@ Packet = namedtuple('Packet', 'sender destination packet_id timestamp')
 
 
 class Process(object):
-    def __init__(self, name, actions, packet_pool):
+    def __init__(self, name, actions, message_channel):
         self.name = name
         self.actions = actions
-        self.packet_pool = packet_pool
+        self.message_channel = message_channel
         self.clock = 0
 
     @property
@@ -38,7 +38,7 @@ class Process(object):
     def handle_action(self, action):
         if isinstance(action, SendAction):
             self.clock += 1
-            self.packet_pool.append(Packet(
+            self.message_channel.append(Packet(
                 sender=self.name,
                 destination=action.destination,
                 packet_id=action.packet_id,
@@ -46,8 +46,8 @@ class Process(object):
             return True
 
         elif isinstance(action, ReceiveAction):
-            for i in reversed(xrange(len(self.packet_pool))):
-                packet = self.packet_pool[i]
+            for i in reversed(xrange(len(self.message_channel))):
+                packet = self.message_channel[i]
                 if packet.sender != action.sender:
                     continue
                 if packet.destination != self.name:
@@ -56,7 +56,7 @@ class Process(object):
                     continue
                 self.clock += 1
                 self.clock = max(self.clock, packet.timestamp)
-                del self.packet_pool[i]
+                del self.message_channel[i]
                 return True
             else:
                 return False
@@ -74,17 +74,17 @@ class Process(object):
             raise NotImplementedError
 
 
-def parse_input(infile, packet_pool=None):
+def parse_input(infile, message_channel=None):
     process_name = None
     process_actions = deque()
-    packet_pool = deque() if packet_pool is None else packet_pool
+    message_channel = deque() if message_channel is None else message_channel
     lines = (line.lower().strip() for line in infile if line.strip())
     for lineno, line in enumerate(lines, start=1):
         tokens = line.split()
         if line.startswith('begin process'):
             process_name = tokens[2]
         elif line.startswith('end process'):
-            yield Process(process_name, process_actions, packet_pool)
+            yield Process(process_name, process_actions, message_channel)
             process_name = None
             process_actions = deque()
         elif line.startswith('begin mutex'):
