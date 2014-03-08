@@ -1,0 +1,17 @@
+begin process p1
+    send p2 m1
+    print send-m1
+    print wait-m2
+    recv p2 m2
+    print recv-m2
+    print done-p1
+end process p1
+
+begin process p2
+    print wait-m1
+    recv p1 m1
+    print recv-m1
+    print send-m2
+    send p1 m2 
+    print done-p2
+end process p2
