@@ -59,8 +59,9 @@ class Process(object):
                 if packet.payload != action.payload:
                     continue
                 self.clock = max(self.clock, packet.timestamp) + 1
-                print 'received {pid} {payload} {time}'.format(
-                    pid=self.pid, payload=packet.payload, time=self.clock)
+                print 'received {pid} {payload} {sender} {time}'.format(
+                    pid=self.pid, payload=packet.payload,
+                    sender=packet.sender, time=self.clock)
                 del self.message_channel[i]
                 return True
             else:
