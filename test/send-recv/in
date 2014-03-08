@@ -1,17 +1,14 @@
 begin process p1
     send p2 m1
-    print send-m1
-    print wait-m2
+    print aaaa
     recv p2 m2
-    print recv-m2
-    print done-p1
+    print bbbb
 end process p1
 
 begin process p2
-    print wait-m1
+    print 1111
     recv p1 m1
-    print recv-m1
-    print send-m2
+    print 2222
     send p1 m2 
-    print done-p2
+    print 3333
 end process p2
