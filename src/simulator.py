@@ -11,7 +11,7 @@ PrintAction = namedtuple('PrintAction', 'payload')
 MutexStartAction = namedtuple('MutexStartAction', '')
 MutexEndAction = namedtuple('MutexEndAction', '')
 
-Packet = namedtuple('Packet', 'sender destination packet_id')
+Packet = namedtuple('Packet', 'sender destination packet_id timestamp')
 
 
 class Process(object):
@@ -41,7 +41,8 @@ class Process(object):
             self.packet_pool.append(Packet(
                 sender=self.name,
                 destination=action.destination,
-                packet_id=action.packet_id))
+                packet_id=action.packet_id,
+                timestamp=self.clock))
             return True
 
         elif isinstance(action, ReceiveAction):
@@ -53,8 +54,9 @@ class Process(object):
                     continue
                 if packet.packet_id != action.packet_id:
                     continue
-                del self.packet_pool[i]
                 self.clock += 1
+                self.clock = max(self.clock, packet.timestamp)
+                del self.packet_pool[i]
                 return True
             else:
                 return False
