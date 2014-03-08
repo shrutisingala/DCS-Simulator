@@ -41,6 +41,7 @@ class Process(object):
             packet = Packet(self.name, action.destination, action.packet_id)
             self.packet_pool.add(packet)
             return True
+
         elif isinstance(action, ReceiveAction):
             try:
                 self.packet_pool.remove(Packet(
@@ -51,12 +52,15 @@ class Process(object):
                 return False
             else:
                 return True
+
         elif isinstance(action, PrintAction):
             print 'printed {name} {message} {time}'.format(
                 name=self.name, message=action.payload, time=self.clock)
             return True
+
         elif isinstance(action, MutexStartAction):
             raise NotImplementedError
+
         elif isinstance(action, MutexEndAction):
             raise NotImplementedError
 
