@@ -19,7 +19,7 @@ class Process(object):
         self.name = name
         self.actions = actions
         self.packet_pool = packet_pool
-        self.clock = 1
+        self.clock = 0
 
     @property
     def is_done(self):
@@ -33,11 +33,11 @@ class Process(object):
         if self.is_done:
             return
         if self.handle_action(self.actions[0]):
-            self.clock += 1
             self.actions.popleft()
 
     def handle_action(self, action):
         if isinstance(action, SendAction):
+            self.clock += 1
             packet = Packet(self.name, action.destination, action.packet_id)
             self.packet_pool.add(packet)
             return True
@@ -51,9 +51,11 @@ class Process(object):
             except KeyError:
                 return False
             else:
+                self.clock += 1
                 return True
 
         elif isinstance(action, PrintAction):
+            self.clock += 1
             print 'printed {name} {message} {time}'.format(
                 name=self.name, message=action.payload, time=self.clock)
             return True
