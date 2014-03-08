@@ -1,13 +1,15 @@
 SRC = src
 RES = res
+TEST = test
 
 SHELL := /bin/bash
 MAIN := $(SRC)/simulator.py
 
-test-in1: $(MAIN) $(RES)/in1.txt $(RES)/out1.txt
-	diff <($(MAIN) $(RES)/in1.txt) $(RES)/out1.txt
-
-test-in4: $(MAIN) $(RES)/in4.txt $(RES)/out4.txt
-	diff <($(MAIN) $(RES)/in4.txt) $(RES)/out4.txt
-
-tests: test-in1
+tests:
+	for test in $(TEST)/*; do \
+		diff -q \
+			<($(MAIN) $$test/in | sort -k4) \
+			<(sort -k4 $$test/out) >/dev/null \
+		&& echo "$$test OK" \
+		|| echo "$$test FAILED" \
+	; done
