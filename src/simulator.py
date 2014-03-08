@@ -5,18 +5,18 @@ from collections import deque, namedtuple
 import logging
 
 
-SendAction = namedtuple('SendAction', 'destination packet_id')
-ReceiveAction = namedtuple('ReceiveAction', 'sender packet_id')
+SendAction = namedtuple('SendAction', 'destination payload')
+ReceiveAction = namedtuple('ReceiveAction', 'sender payload')
 PrintAction = namedtuple('PrintAction', 'payload')
 MutexStartAction = namedtuple('MutexStartAction', '')
 MutexEndAction = namedtuple('MutexEndAction', '')
 
-Packet = namedtuple('Packet', 'sender destination packet_id timestamp')
+Packet = namedtuple('Packet', 'sender destination payload timestamp')
 
 
 class Process(object):
-    def __init__(self, name, actions, message_channel):
-        self.name = name
+    def __init__(self, pid, actions, message_channel):
+        self.pid = pid
         self.actions = actions
         self.message_channel = message_channel
         self.clock = 0
@@ -26,8 +26,8 @@ class Process(object):
         return len(self.actions) == 0
 
     def __repr__(self):
-        return 'Process(name={name}, actions={actions})'.format(
-            name=self.name, actions=self.actions)
+        return 'Process(pid={pid}, actions={actions})'.format(
+            pid=self.pid, actions=self.actions)
 
     def execute_next(self):
         if self.is_done:
@@ -39,13 +39,13 @@ class Process(object):
         if isinstance(action, SendAction):
             self.clock += 1
             packet = Packet(
-                sender=self.name,
+                sender=self.pid,
                 destination=action.destination,
-                packet_id=action.packet_id,
+                payload=action.payload,
                 timestamp=self.clock)
             self.message_channel.append(packet)
-            print 'sent {pid} {message} {destination} {time}'.format(
-                pid=self.name, message=packet.packet_id,
+            print 'sent {pid} {payload} {destination} {time}'.format(
+                pid=self.pid, payload=packet.payload,
                 destination=packet.destination, time=self.clock)
             return True
 
@@ -54,14 +54,14 @@ class Process(object):
                 packet = self.message_channel[i]
                 if packet.sender != action.sender:
                     continue
-                if packet.destination != self.name:
+                if packet.destination != self.pid:
                     continue
-                if packet.packet_id != action.packet_id:
+                if packet.payload != action.payload:
                     continue
                 self.clock += 1
                 self.clock = max(self.clock, packet.timestamp)
-                print 'received {pid} {message} {time}'.format(
-                    pid=self.name, message=packet.packet_id, time=self.clock)
+                print 'received {pid} {payload} {time}'.format(
+                    pid=self.pid, payload=packet.payload, time=self.clock)
                 del self.message_channel[i]
                 return True
             else:
@@ -69,8 +69,8 @@ class Process(object):
 
         elif isinstance(action, PrintAction):
             self.clock += 1
-            print 'printed {name} {message} {time}'.format(
-                name=self.name, message=action.payload, time=self.clock)
+            print 'printed {pid} {payload} {time}'.format(
+                pid=self.pid, payload=action.payload, time=self.clock)
             return True
 
         elif isinstance(action, MutexStartAction):
