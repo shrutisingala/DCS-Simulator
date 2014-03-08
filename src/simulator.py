@@ -1,17 +1,17 @@
 #!/usr/bin/env python2.7
 
 
-import collections
+from collections import deque, namedtuple
 import logging
 
 
-SendAction = collections.namedtuple('SendAction', 'destination packet_id')
-ReceiveAction = collections.namedtuple('ReceiveAction', 'sender packet_id')
-PrintAction = collections.namedtuple('PrintAction', 'payload')
-MutexStartAction = collections.namedtuple('MutexStartAction', '')
-MutexEndAction = collections.namedtuple('MutexEndAction', '')
+SendAction = namedtuple('SendAction', 'destination packet_id')
+ReceiveAction = namedtuple('ReceiveAction', 'sender packet_id')
+PrintAction = namedtuple('PrintAction', 'payload')
+MutexStartAction = namedtuple('MutexStartAction', '')
+MutexEndAction = namedtuple('MutexEndAction', '')
 
-Packet = collections.namedtuple('Packet', 'sender destination packet_id')
+Packet = namedtuple('Packet', 'sender destination packet_id')
 
 
 class Process(object):
@@ -74,8 +74,8 @@ class Process(object):
 
 def parse_input(infile, packet_pool=None):
     process_name = None
-    process_actions = collections.deque()
-    packet_pool = collections.deque() if packet_pool is None else packet_pool
+    process_actions = deque()
+    packet_pool = deque() if packet_pool is None else packet_pool
     lines = (line.lower().strip() for line in infile if line.strip())
     for lineno, line in enumerate(lines, start=1):
         tokens = line.split()
@@ -84,7 +84,7 @@ def parse_input(infile, packet_pool=None):
         elif line.startswith('end process'):
             yield Process(process_name, process_actions, packet_pool)
             process_name = None
-            process_actions = collections.deque()
+            process_actions = deque()
         elif line.startswith('begin mutex'):
             process_actions.append(MutexStartAction())
         elif line.startswith('end mutex'):
