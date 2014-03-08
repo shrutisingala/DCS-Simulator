@@ -2,6 +2,7 @@ sent p1 m1 p2 1
 printed p1 aaaa 2
 received p1 m2 4
 printed p1 bbbb 5
+
 printed p2 1111 1
 received p2 m1 2
 printed p2 2222 3
