@@ -1,0 +1,12 @@
+sent p1 aaa p2 1
+sent p1 bbb p2 2
+sent p1 ccc p2 3
+sent p1 ddd p3 4
+
+received p2 aaa p1 2
+received p2 bbb p1 3
+sent p2 111 p3 4
+received p2 ccc p1 5
+
+received p3 111 p2 5
+received p3 ddd p1 6

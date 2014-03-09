@@ -1,0 +1,18 @@
+begin process p1
+    send p2 aaa
+    send p2 bbb
+    send p2 ccc
+    send p3 ddd
+end process p1
+
+begin process p2
+    recv p1 aaa
+    recv p1 bbb
+    send p3 111
+    recv p1 ccc
+end process p2
+
+begin process p3
+    recv p2 111
+    recv p1 ddd
+end process p2
