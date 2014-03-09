@@ -117,11 +117,11 @@ class Process(object):
             acks = set(msg for msg in self.mutex_channel
                        if isinstance(msg, MutexAck)
                        and msg.destination == self.pid)
-            if len(acks) == len(self.network) - 1:
-                self.has_mutex = True
-                self.mutex_channel.remove(self.mutex_req)
-                return True
-            return False
+            if len(acks) != len(self.network) - 1:
+                return False
+            self.has_mutex = True
+            self.mutex_channel.remove(self.mutex_req)
+            return True
 
         elif isinstance(action, MutexEndAction):
             # release mutex lock
