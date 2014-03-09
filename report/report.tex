@@ -19,6 +19,29 @@
 
 \section*{Question 1}
 \section*{Question 2}
+
+Starvation occurs when a thread that tried to enter its critical section (CS)
+never actually did end up entering its critical section at any point in time.
+
+An example of a system that leads to starvation is any system using the mutual
+exclusion algorithm proposed by Dijkstra in \cite{dijkstra2001}.  The algorithm
+works as follows.  When two processes attempt to enter the CS at the same time,
+the process who most recently was in the CS is given priority.  This will lead
+to starved processes if the same process is interested in the CS all the time
+\cite[Theorem~5.1]{alagarsamy2003}.
+
+Another system that leads to starvation is any system using the generalised
+Peterson's mutual exclusion algorithm presented by \cite{hofri1990} with $N \geq
+3$ processes.  The algorithm works as follows.  There are $N$ ``waiting rooms''
+through which processes that wish to enter the CS have to advance.  Every
+waiting room allows at least one process to advance and keeps one process
+waiting. Assume there are three processes $p_1$, $p_2$ and $p_3$.  $p_2$
+requests the CS, then $p_3$ requests the CS and then $p_1$ requests the CS.
+Next assume that $p_1$ runs and then $p_3$ runs. $p_3$ now is eligible for the
+CS again.  Assume that $p_3$ requests the CS again (and that $p_2$ requests the
+CS after $p_3$).  $p_2$ and $p_3$ now take turns requesting the CS and running.
+$p_1$ is starved \cite[Figure~1]{griffault2014}.
+
 \section*{Question 3}
 
 \textbf{Algorithm:}  Every node $p$ without children in the BFS tree $T$ of the
@@ -113,5 +136,25 @@ m&  &  &  &  &  &  &  &  &  &  &  & 0\\
 \label{tbl:unweighted-paths}
 \end{subtable}
 \end{table}
+
+\clearpage
+
+\begin{thebibliography}{32}
+
+\bibitem{dijkstra2001} Dijkstra, Edsger W. ``Solution of a problem in concurrent
+programming control.'' \emph{Pioneers and Their Contributions to Software
+Engineering.} Springer Berlin Heidelberg, 2001. 289-294.
+
+\bibitem{alagarsamy2003} Alagarsamy, K. ``Some myths about famous mutual
+exclusion algorithms.'' \emph{ACM SIGACT News} 34.3 (2003): 94-103.
+
+\bibitem{hofri1990} Hofri, Micha. ``Proof of a mutual exclusion algorithm --- a
+classic example.'' \emph{ACM SIGOPS Operating Systems Review} 24.1 (1990):
+18-22.
+
+\bibitem{griffault2014} Griffault, A., and G. Point. ``Proof of Peterson’s
+algorithm for mutual exclusion.'' (2014).
+
+\end{thebibliography}
 
 \end{document}
