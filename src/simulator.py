@@ -28,7 +28,6 @@ class Process(object):
         self.mutex_req = None
         self.has_mutex = False
 
-    @property
     def is_done(self):
         return len(self.actions) == 0
 
@@ -38,7 +37,7 @@ class Process(object):
 
     def execute_next(self):
         self.handle_mutex_requests()
-        if self.is_done:
+        if self.is_done():
             return
         if self.handle_action(self.actions[0]):
             self.actions.popleft()
@@ -172,7 +171,7 @@ if __name__ == '__main__':
 
     try:
         network = parse_input(infile)
-        while not all(process.is_done for process in network):
+        while not all(process.is_done() for process in network):
             for process in network:
                 process.execute_next()
     finally:
