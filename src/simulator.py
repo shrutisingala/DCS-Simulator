@@ -29,8 +29,8 @@ class Process(object):
         self.has_mutex = False
 
     def __repr__(self):
-        return 'Process(pid={pid}, actions={actions})'.format(
-            pid=self.pid, actions=self.actions)
+        return 'Process(pid={pid}, time={time})'.format(
+            pid=self.pid, time=self.clock)
 
     def is_done(self):
         return len(self.actions) == 0
