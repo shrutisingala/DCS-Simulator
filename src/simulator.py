@@ -164,7 +164,8 @@ def parse_input(infile, **kwargs):
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description='Simulator for the Ricart-Agrawala mutex algorithm')
     parser.add_argument('infile', type=argparse.FileType())
     args = parser.parse_args()
     infile = args.infile
