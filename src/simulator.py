@@ -110,7 +110,7 @@ class Process(object):
             acks = set(msg for msg in self.mutex_channel
                        if isinstance(msg, MutexAck)
                        and msg.destination == self.pid)
-            if len(acks) == len(network) - 1:
+            if len(acks) == len(self.network) - 1:
                 self.has_mutex = True
                 self.mutex_channel.remove(self.mutex_req)
                 return True
