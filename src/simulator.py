@@ -191,11 +191,17 @@ def parse_input(infile, **kwargs):
     return network
 
 
-def main(infile):
-    network = parse_input(infile)
+def run_processes(network):
+    # use a process manager to run the processes
+    # processes are polleod in a round-robin manner until all are teminated
     while not all(process.is_done() for process in network):
         for process in network:
             process.execute_next()
+
+
+def main(infile):
+    network = parse_input(infile)
+    run_processes(network)
 
 
 if __name__ == '__main__':
