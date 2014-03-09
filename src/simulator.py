@@ -47,6 +47,7 @@ class Process(object):
             self.actions.popleft()
 
     def lower_priority(self, mutex_req):
+        # processes that asked for the mutex lock earlier have priority
         if self.clock > mutex_req.time:
             return True
         if self.clock < mutex_req.time:
@@ -54,6 +55,8 @@ class Process(object):
         return self.pid > mutex_req.sender
 
     def handle_mutex_requests(self):
+        # approve all mutex requests if the process has lower priority or
+        # doesn't need mutex itself
         reqs = (msg for msg in self.mutex_channel
                 if isinstance(msg, MutexReq) and msg.sender != self.pid)
         acks = set()
@@ -67,6 +70,7 @@ class Process(object):
 
     def handle_action(self, action):
         if isinstance(action, SendAction):
+            # put a message into the pool
             self.clock += 1
             packet = Packet(
                 sender=self.pid,
@@ -80,6 +84,7 @@ class Process(object):
             return True
 
         elif isinstance(action, ReceiveAction):
+            # see if there is a message for the process in the pool
             for i in reversed(xrange(len(self.message_channel))):
                 packet = self.message_channel[i]
                 if packet.sender != action.sender:
@@ -98,12 +103,14 @@ class Process(object):
                 return False
 
         elif isinstance(action, PrintAction):
+            # use the shared printer
             self.clock += 1
             print 'printed {pid} {payload} {time}'.format(
                 pid=self.pid, payload=action.payload, time=self.clock)
             return True
 
         elif isinstance(action, MutexStartAction):
+            # acquire mutex lock
             if self.mutex_req is None:
                 self.mutex_req = MutexReq(sender=self.pid, time=self.clock)
                 self.mutex_channel.add(self.mutex_req)
@@ -117,6 +124,7 @@ class Process(object):
             return False
 
         elif isinstance(action, MutexEndAction):
+            # release mutex lock
             self.mutex_channel.update(self.deferred_mutex_requests)
             self.mutex_req = None
             self.has_mutex = False
