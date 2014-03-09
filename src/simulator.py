@@ -35,9 +35,13 @@ class Process(object):
     def is_done(self):
         return len(self.actions) == 0
 
+    def can_execute(self):
+        other_mutex = any(process.has_mutex for process in self.network)
+        return self.has_mutex or not other_mutex
+
     def execute_next(self):
         self.handle_mutex_requests()
-        if self.is_done():
+        if self.is_done() or not self.can_execute():
             return
         if self.handle_action(self.actions[0]):
             self.actions.popleft()
@@ -94,9 +98,6 @@ class Process(object):
                 return False
 
         elif isinstance(action, PrintAction):
-            other_mutex = any(process.has_mutex for process in self.network)
-            if not self.has_mutex and other_mutex:
-                return False
             self.clock += 1
             print 'printed {pid} {payload} {time}'.format(
                 pid=self.pid, payload=action.payload, time=self.clock)
