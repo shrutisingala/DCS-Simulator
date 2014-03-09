@@ -5,6 +5,10 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{subfigure}
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+\DeclareMathOperator{\avg}{avg}
 
 \title{Distributed Systems\\Assignment 1}
 \author{Clemens Wolff (s0942284)}
@@ -16,6 +20,39 @@
 \section*{Question 1}
 \section*{Question 2}
 \section*{Question 3}
+
+\textbf{Algorithm:}  Every node $p$ without children in the BFS tree $T$ of the
+graph $G$ sends its value of $f.p$ to its parent $P^p$.  Every parent $P^j$
+receives values
+$f.p^1\ldots f.p^{k^{P^j}}$ where $k^{P^j}$ is the number of children of $P^j$.
+The parents sends the values
+$$\mathfrak{M}^{P^{P^j}} = \max\left\{f.p_1\ldots f.p_k^{P^j}\right\},$$
+$$\mathfrak{S}^{P^{P^j}} = \sum\limits_{i=1}^{k^{P^j}} f.p_i\;\mathrm{and}$$
+$$\mathfrak{K}^{P^{P^j}} = k + 1$$
+to its own parent $P^{P^j}$.
+Repeat until the root node $r$ of $T$ is reached.  The maximum value of $f$ in
+the graph is the maximum of the values that the root node receives and the value
+of $f$ at the root node:
+$$\max\left\{p.f \mid p \in G\right\} = \max(r.f, \mathfrak{M}^r).$$
+Similarly, the average value
+of $f$ in the graph is:
+$$\avg\left\{p.f \mid p \in G\right\} = {r.f + \mathfrak{S}^r \over \mathfrak{K}^r + 1}.$$
+The root node now uses the BFS tree to distribute the maximum and average values
+to the tree (i.e.\ the value is sent to the children of $r$ and those children
+forward the value to their children recursively until the leaves of the tree are
+reached).
+
+\textbf{Time complexity:}  It takes at most $N$ time to send a message from
+leaves to root in a BFS tree with $N$ items.  Collecting the tree-maximum
+tree-sum therefore takes at most $N$ time and distributing the values back in
+the tree takes at most $N$ time.  Therefore the overall time complexity is
+$O(N)$.
+
+\textbf{Message complexity:}  Every node in the tree only sends messages to its
+children or parent.  This means that every node sends at most one message when
+collecting or distributing the tree-maximum and tree-sum.  Therefore the overall
+message complexity is $O(N)$.
+
 \section*{Question 4}
 
 The diameter of a graph is the longest shortest path in the graph (i.e.\ the
