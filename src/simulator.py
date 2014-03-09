@@ -28,12 +28,12 @@ class Process(object):
         self.mutex_req = None
         self.has_mutex = False
 
-    def is_done(self):
-        return len(self.actions) == 0
-
     def __repr__(self):
         return 'Process(pid={pid}, actions={actions})'.format(
             pid=self.pid, actions=self.actions)
+
+    def is_done(self):
+        return len(self.actions) == 0
 
     def execute_next(self):
         self.handle_mutex_requests()
