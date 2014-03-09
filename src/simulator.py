@@ -162,6 +162,13 @@ def parse_input(infile, **kwargs):
     return network
 
 
+def main(infile):
+    network = parse_input(infile)
+    while not all(process.is_done() for process in network):
+        for process in network:
+            process.execute_next()
+
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(
@@ -171,9 +178,6 @@ if __name__ == '__main__':
     infile = args.infile
 
     try:
-        network = parse_input(infile)
-        while not all(process.is_done() for process in network):
-            for process in network:
-                process.execute_next()
+        main(infile)
     finally:
         infile.close()
