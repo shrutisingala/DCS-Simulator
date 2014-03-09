@@ -36,7 +36,7 @@ Peterson's mutual exclusion algorithm presented by \cite{hofri1990} with $N \geq
 through which processes that wish to enter the CS have to advance.  Every
 waiting room allows at least one process to advance and keeps one process
 waiting. Assume there are three processes $p_1$, $p_2$ and $p_3$.  $p_2$
-requests the CS, then $p_3$ requests the CS and then $p_1$ requests the CS.
+requests the CS, then $p_3$ requests the CS and then $p_1$ requests the CS\@.
 Next assume that $p_1$ runs and then $p_3$ runs. $p_3$ now is eligible for the
 CS again.  Assume that $p_3$ requests the CS again (and that $p_2$ requests the
 CS after $p_3$).  $p_2$ and $p_3$ now take turns requesting the CS and running.
