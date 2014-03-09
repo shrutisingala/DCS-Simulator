@@ -1,11 +1,11 @@
 begin process p1
     begin mutex
-    print aaaa
-    print bbbb
-    print cccc
-    print dddd
-    print eeee
-    print ffff
+        print aaaa
+        print bbbb
+        print cccc
+        print dddd
+        print eeee
+        print ffff
     end mutex
     print gggg
 end process
