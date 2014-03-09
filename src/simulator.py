@@ -36,18 +36,27 @@ class Process(object):
         return len(self.actions) == 0
 
     def can_execute(self):
+        # a process can execute an action if it has the mutex
+        # or if no other process has the mutex
         other_mutex = any(process.has_mutex for process in self.network)
         return self.has_mutex or not other_mutex
 
     def execute_next(self):
+        # respond to mutex requests
         self.handle_mutex_requests()
+        # skip a turn if a different process has mutex or if the process
+        # doesn't have any actions left to perform
         if self.is_done() or not self.can_execute():
             return
+        # try to execute the next action
+        # if the action was successful remove it from the action queue
+        # otherwise try again next time
         if self.handle_action(self.actions[0]):
             self.actions.popleft()
 
     def lower_priority(self, mutex_req):
-        # processes that asked for the mutex lock earlier have priority
+        # processes that asked for the mutex lock earlier or have a lower
+        # process id have priority
         if self.clock > mutex_req.time:
             return True
         if self.clock < mutex_req.time:
@@ -55,8 +64,10 @@ class Process(object):
         return self.pid > mutex_req.sender
 
     def handle_mutex_requests(self):
-        # approve all mutex requests if the process has lower priority or
-        # doesn't need mutex itself
+        # if the process doesn't need mutex or the process has lower priority
+        # then approve all mutex requests
+        # otherwise remember the mutex requests so that they can be approved
+        # when the process releases the mutex
         reqs = (msg for msg in self.mutex_channel
                 if isinstance(msg, MutexReq) and msg.sender != self.pid)
         acks = set()
@@ -70,7 +81,7 @@ class Process(object):
 
     def handle_action(self, action):
         if isinstance(action, SendAction):
-            # put a message into the pool
+            # send a message by putting it into the message pool
             self.clock += 1
             packet = Packet(
                 sender=self.pid,
@@ -84,7 +95,7 @@ class Process(object):
             return True
 
         elif isinstance(action, ReceiveAction):
-            # see if there is a message for the process in the pool
+            # try to receive a message
             for i in reversed(xrange(len(self.message_channel))):
                 packet = self.message_channel[i]
                 if packet.sender != action.sender:
@@ -99,6 +110,8 @@ class Process(object):
                     sender=packet.sender, time=self.clock)
                 del self.message_channel[i]
                 return True
+            # honor the happens-before relationship: wait for the message to
+            # get sent before trying to receive it
             else:
                 return False
 
@@ -110,21 +123,23 @@ class Process(object):
             return True
 
         elif isinstance(action, MutexStartAction):
-            # acquire mutex lock
+            # send a new mutex request
             if self.mutex_req is None:
                 self.mutex_req = MutexReq(sender=self.pid, time=self.clock)
                 self.mutex_channel.add(self.mutex_req)
             acks = set(msg for msg in self.mutex_channel
                        if isinstance(msg, MutexAck)
                        and msg.destination == self.pid)
+            # wait until all processes have responded to the request
             if len(acks) != len(self.network) - 1:
                 return False
+            # acquire the mutex if all processes have responded to the request
             self.has_mutex = True
             self.mutex_channel.remove(self.mutex_req)
             return True
 
         elif isinstance(action, MutexEndAction):
-            # release mutex lock
+            # release mutex lock and respond to all deferred mutex requests
             self.mutex_channel.update(self.deferred_mutex_requests)
             self.mutex_req = None
             self.has_mutex = False
