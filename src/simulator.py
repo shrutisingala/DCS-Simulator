@@ -133,30 +133,36 @@ def parse_input(infile, **kwargs):
     lines = (line.lower().strip() for line in infile if line.strip())
     for lineno, line in enumerate(lines, start=1):
         tokens = line.split()
-        if line.startswith('begin process'):
-            process_name = tokens[2]
-        elif line.startswith('end process'):
-            network.add(Process(
-                pid=process_name,
-                actions=process_actions,
-                network=network,
-                message_channel=message_channel,
-                mutex_channel=mutex_channel))
-            process_name = None
-            process_actions = deque()
-        elif line.startswith('begin mutex'):
-            process_actions.append(MutexStartAction())
-        elif line.startswith('end mutex'):
-            process_actions.append(MutexEndAction())
-        elif line.startswith('send'):
-            process_actions.append(SendAction(tokens[1], tokens[2]))
-        elif line.startswith('recv'):
-            process_actions.append(ReceiveAction(tokens[1], tokens[2]))
-        elif line.startswith('print'):
-            process_actions.append(PrintAction(tokens[1]))
-        else:
+        try:
+            if line.startswith('begin process'):
+                process_name = tokens[2]
+            elif line.startswith('end process'):
+                network.add(Process(
+                    pid=process_name,
+                    actions=process_actions,
+                    network=network,
+                    message_channel=message_channel,
+                    mutex_channel=mutex_channel))
+                process_name = None
+                process_actions = deque()
+            elif line.startswith('begin mutex'):
+                process_actions.append(MutexStartAction())
+            elif line.startswith('end mutex'):
+                process_actions.append(MutexEndAction())
+            elif line.startswith('send'):
+                process_actions.append(SendAction(tokens[1], tokens[2]))
+            elif line.startswith('recv'):
+                process_actions.append(ReceiveAction(tokens[1], tokens[2]))
+            elif line.startswith('print'):
+                process_actions.append(PrintAction(tokens[1]))
+            else:
+                logging.warning(
+                    'ignoring unknown command: "{command}" '
+                    'on line {lineno} in file {filepath}'.format(
+                        command=line, lineno=lineno, filepath=infile.name))
+        except IndexError:
             logging.warning(
-                'ignoring unknown command: "{command}" '
+                'ignoring misformed command: "{command}" '
                 'on line {lineno} in file {filepath}'.format(
                     command=line, lineno=lineno, filepath=infile.name))
     return network
