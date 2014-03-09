@@ -4,6 +4,7 @@
 \usepackage{parskip}
 \usepackage{graphicx}
 \usepackage{color}
+\usepackage{subfigure}
 
 \title{Distributed Systems\\Assignment 1}
 \author{Clemens Wolff (s0942284)}
@@ -30,6 +31,7 @@ c\rightarrow g\rightarrow l\rightarrow m$.  Another path realising this diameter
 is $e\rightarrow a\rightarrow c\rightarrow g\rightarrow l\rightarrow m$.
 
 \begin{table}
+\begin{subtable}
 \centering
 \begin{tabular}{c || c c c c c c c c c c c c}
  & a& b& c& d& e& f& g& h& i& k& l& m\\
@@ -49,9 +51,10 @@ m&  &  &  &  &  &  &  &  &  &  &  & 0\\
 \end{tabular}
 \caption{Length of shortest paths between nodes in weighted graph.}
 \label{tbl:weighted-paths}
-\end{table}
+\end{subtable}
+\qquad
 
-\begin{table}
+\begin{subtable}
 \centering
 \begin{tabular}{c || c c c c c c c c c c c c}
  & a& b& c& d& e& f& g& h& i& k& l& m\\
@@ -71,6 +74,7 @@ m&  &  &  &  &  &  &  &  &  &  &  & 0\\
 \end{tabular}
 \caption{Length of shortest paths between nodes in unweighted graph.}
 \label{tbl:unweighted-paths}
+\end{subtable}
 \end{table}
 
 \end{document}
