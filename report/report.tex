@@ -53,10 +53,21 @@ $p_1$ is starved \cite[Figure~1]{griffault2014}.
 
 \section*{Question 3}
 
-\textbf{Algorithm:}  Every node $p$ without children in the BFS tree $T$ of the
-graph $G=(V,E)$ sends its value of $f.p$ to its parent $P^p$.  Every parent
-$P^j$
-receives values
+\textbf{Inputs:}  A distributed system represented by a graph $G=(V,E)$ where
+$V$ are the nodes in the distributed system and $E$ are the connections between
+the nodes.  A BFS tree $T$ of the graph rooted at some node $r$.
+
+\textbf{Algorithm:}  The computation is started by some node sending a signal to
+every other node in the system.  Without loss of generality, assume that the
+root node $r$ initializes the computation.\footnote{If any non-root node wants
+to initalise the computation, it can simply send a message to the root first.
+The remainder of the algorithm works the same.  The time and message
+complexities are not changed since, using the BFS tree, it takes at most $O(N)$
+time and $O(N)$ messages to send the ``initialise computation'' message to the
+root node.}  The root node $r$ sends an ``initialise computation'' message to
+its children.  The children forward the message to their children recursively
+until the leaves of the BFS tree are reached.  Every leaf node $p$ now sends its
+value of $f.p$ to its parent $P^p$.  Every parent $P^j$ receives values
 $f.p^1\ldots f.p^{k^{P^j}}$ where $k^{P^j}$ is the number of children of $P^j$.
 The parents sends the values
 $$\mathfrak{M}^{P^{P^j}} = \max\left\{f.p_1\ldots f.p_k^{P^j}\right\},$$
@@ -76,15 +87,16 @@ forward the value to their children recursively until the leaves of the tree are
 reached).
 
 \textbf{Time complexity:}  It takes at most $N$ time to send a message from
-leaves to root in a BFS tree with $N$ items.  Collecting the tree-maximum
-tree-sum therefore takes at most $N$ time and distributing the values back in
-the tree takes at most $N$ time.  Therefore the overall time complexity is
-$O(N)$.
+leaves to root in a BFS tree with $N$ items.  Initialising the computation and
+collecting the tree-maximum tree-sum therefore take at most $O(N) + O(N) = O(N)$
+time and distributing the values back in the tree takes at most $O(N)$ time.
+Therefore the overall time complexity is $O(N)$.
 
 \textbf{Message complexity:}  Every node in the tree only sends messages to its
 children or parent.  This means that every node sends at most one message when
-collecting or distributing the tree-maximum and tree-sum.  Therefore the overall
-message complexity is $O(N)$.
+the initialisation message is sent or when collecting or distributing the
+tree-maximum and tree-sum.  Therefore the overall message complexity is $3O(N) =
+O(N)$.
 
 \section*{Question 4}
 
