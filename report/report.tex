@@ -51,6 +51,18 @@ CS again.  Assume that $p_3$ requests the CS again (and that $p_2$ requests the
 CS after $p_3$).  $p_2$ and $p_3$ now take turns requesting the CS and running.
 $p_1$ is starved \cite[Figure~1]{griffault2014}.
 
+In order to take an example that is more related to this assignment, consider
+the following system.  The Rickart-Agrawala mutual exclusion algorithm used in
+the assignments gives process access to the CS by using a first-in-first-out
+(FIFO) queue of critical-section request timestamps: process that request the CS
+earlier get access first.  If the FIFO queue were to be replaced with a
+last-in-first-out (LIFO) queue, the resulting system would lead to starvation.
+In order to show this, consider the following example.  Two processes, $p_1$ and
+$p_2$ want to access the CS\@.  $p_1$ sends its request before $p_2$ --- $p_2$
+thus gets access to the CS\@.  Now assume that $p_2$ wants to access the CS
+again, immediately after exiting it.  $p_2$ sends a CS request, has a lower
+timestamp than $p_1$ and thus gets access.  Repeat.  $p_1$ is starved.
+
 \section*{Question 3}
 
 \textbf{Inputs:}  A distributed system represented by a graph $G=(V,E)$ where
