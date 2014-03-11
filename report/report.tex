@@ -98,11 +98,11 @@ to the tree (i.e.\ the value is sent to the children of $r$ and those children
 forward the value to their children recursively until the leaves of the tree are
 reached).
 
-\textbf{Time complexity:}  It takes at most $N$ time/communication rounds to send a message from
-leaves to root in a BFS tree with $N$ items.  Initialising the computation and
-collecting the tree-maximum tree-sum therefore take at most $O(N) + O(N) = O(N)$
-time and distributing the values back in the tree takes at most $O(N)$ time.
-Therefore the overall time complexity is $O(N)$.
+\textbf{Time complexity:}  It takes at most $N$ time/communication rounds to
+send a message from leaves to root in a BFS tree with $N$ items.  Initialising
+the computation and collecting the tree-maximum tree-sum therefore take at most
+$O(N) + O(N) = O(N)$ time and distributing the values back in the tree takes at
+most $O(N)$ time.  Therefore the overall time complexity is $O(N)$.
 
 \textbf{Message complexity:}  Every node in the tree only sends messages to its
 children or parent.  This means that every node sends at most one message when
